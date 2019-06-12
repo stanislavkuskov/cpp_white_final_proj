@@ -14,6 +14,20 @@ public:
         m = 0;
         y = 0;
     }
+
+    Date (int new_y, int new_m, int new_d)
+    {
+
+        if (new_m < 1 || new_m > 12) {
+            throw out_of_range("Month value is invalid: " + to_string(new_m));
+        } else if (new_d < 1 || new_d > 31) {
+            throw out_of_range("Day value is invalid: " + to_string(new_d));
+        }
+        y = new_y;
+        m = new_m;
+        d = new_d;
+    }
+
     int GetYear() const{
         return y;
     };
@@ -53,6 +67,40 @@ private:
     map<Date, set<string>> records;
 };
 
+Date StringToDate(const string& date_string){
+    istringstream date_stream(date_string);
+    bool is_right_str = true;
+
+    int year;
+    date_stream >> year;
+    if (date_stream.peek() != '-'){
+        is_right_str = false;
+    }
+    date_stream.ignore(1);
+
+    int month;
+    date_stream >> month;
+    if (date_stream.peek() != '-'){
+        is_right_str = false;
+    }
+    date_stream.ignore(1);
+
+    int day;
+
+    date_stream >> day;
+    if (not date_stream.eof()){
+        is_right_str = false;
+    }
+
+    if (!is_right_str)
+    {
+        throw logic_error("Wrong date format: " + date_string);
+    }
+    return Date(year, month, day);
+
+
+}
+
 int main() {
     Database db;
 
@@ -63,7 +111,11 @@ int main() {
         stringstream input(command);
         string operation;
         input >> operation;
+
         if (operation == "Add"){
+            string date_string, event;
+            input >> date_string >> event;
+            const Date date = StringToDate(date_string);
 
             cout << "oper: " << operation;
         } else if (operation == "Del"){
