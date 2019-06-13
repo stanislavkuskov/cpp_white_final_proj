@@ -77,7 +77,14 @@ public:
         return is_deleted;
     };
 
-//    int  DeleteDate(const Date& date);
+    int  DeleteDate(const Date& date){
+        int count_of_deleted = 0;
+        if (records.count(date) > 0){
+            count_of_deleted = records.at(date).size();
+            records.erase(date);
+        }
+        return count_of_deleted;
+    };
 
 //    /* ??? */ Find(const Date& date) const; // лпределить тип данных
 
@@ -148,12 +155,13 @@ int main() {
             }
             const Date date = StringToDate(date_string);
             if (event.empty()) {
-                cout << "empty";
+                const int count_of_deleted = db.DeleteDate(date);
+                cout << "Deleted " << count_of_deleted << " events" << endl;
             } else {
                 if (db.DeleteEvent(date, event)) {
-                    std::cout << "Deleted successfully" << std::endl;
+                    cout << "Deleted successfully" << endl;
                 } else {
-                    std::cout << "Event not found" << std::endl;
+                    cout << "Event not found" << endl;
                 }
             }
             cout << "oper: " << operation;
