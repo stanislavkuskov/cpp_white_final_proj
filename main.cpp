@@ -44,7 +44,17 @@ private:
     int y; // может быть отрицательным
 };
 
-bool operator<(const Date& lhs, const Date& rhs);
+bool operator<(const Date& lhs, const Date& rhs){
+    if (lhs.GetYear() != rhs.GetYear()){
+        return lhs.GetYear() < rhs.GetYear();
+    }
+    else if (lhs.GetMonth() != rhs.GetMonth()){
+        return lhs.GetMonth() < rhs.GetMonth();
+    }
+    else {
+        return lhs.GetDay() < rhs.GetDay();
+    }
+};
 
 class Database {
 public:
@@ -56,12 +66,22 @@ public:
         }
     };
 
-    bool DeleteEvent(const Date& date, const string& event);
-    int  DeleteDate(const Date& date);
+    bool DeleteEvent(const Date& date, const string& event){
+        bool is_deleted = false;
+        if (records.count(date) > 0){
+            if (records[date].count(event) > 0){
+                records[date].erase(event);
+                is_deleted = true;
+            }
+        }
+        return is_deleted;
+    };
+
+//    int  DeleteDate(const Date& date);
 
 //    /* ??? */ Find(const Date& date) const; // лпределить тип данных
 
-    void Print() const;
+//    void Print() const;
 
 private:
     map<Date, set<string>> records;
@@ -98,7 +118,6 @@ Date StringToDate(const string& date_string){
     }
     return Date(year, month, day);
 
-
 }
 
 int main() {
@@ -115,10 +134,28 @@ int main() {
         if (operation == "Add"){
             string date_string, event;
             input >> date_string >> event;
+
             const Date date = StringToDate(date_string);
 
-            cout << "oper: " << operation;
+            if (!event.empty() || event != " ") {
+                db.AddEvent(date, event);
+            }
         } else if (operation == "Del"){
+            string date_string, event;
+            input >> date_string;
+            if (!input.eof()) {
+                input >> event;
+            }
+            const Date date = StringToDate(date_string);
+            if (event.empty()) {
+                cout << "empty";
+            } else {
+                if (db.DeleteEvent(date, event)) {
+                    std::cout << "Deleted successfully" << std::endl;
+                } else {
+                    std::cout << "Event not found" << std::endl;
+                }
+            }
             cout << "oper: " << operation;
         } else if (operation == "Find"){
             cout << "oper: " << operation;
